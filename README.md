@@ -1,7 +1,5 @@
 # user-media-audio-visualizer
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/chrisguttandin/user-media-audio-visualizer.svg)](https://greenkeeper.io/)
-
 **A super simple visualizer of user media's audio input.**
 
 [![tests](https://img.shields.io/travis/chrisguttandin/user-media-audio-visualizer/master.svg?style=flat-square)](https://travis-ci.org/chrisguttandin/user-media-audio-visualizer)
