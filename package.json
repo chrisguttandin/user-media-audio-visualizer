@@ -1,0 +1,47 @@
+{
+  "author": "Christoph Guttandin",
+  "bugs": {
+    "url": "https://github.com/chrisguttandin/user-media-audio-visualizer/issues"
+  },
+  "description": "A super simple visualizer of user media's audio input.",
+  "devDependencies": {
+    "autoprefixer": "^7.1.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.2",
+    "cssnano": "^3.10.0",
+    "eslint-config-holy-grail": "^18.0.0",
+    "greenkeeper-lockfile": "^1.6.0",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-connect": "^1.0.2",
+    "grunt-contrib-htmlmin": "^2.4.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-gh-pages": "^2.0.0",
+    "grunt-htmlhint": "^0.9.13",
+    "grunt-if": "^0.1.5",
+    "grunt-postcss": "^0.8.0",
+    "grunt-webpack": "^3.0.0",
+    "gruntify-eslint": "^4.0.0",
+    "husky": "^0.13.4",
+    "load-grunt-config": "^0.19.2",
+    "stylelint": "^7.11.1",
+    "webpack": "^2.6.1"
+  },
+  "homepage": "https://chrisguttandin.github.io/user-media-audio-visualizer",
+  "license": "MIT",
+  "main": "src/index.html",
+  "name": "user-media-audio-visualizer",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrisguttandin/user-media-audio-visualizer.git"
+  },
+  "scripts": {
+    "precommit": "grunt lint",
+    "test": "grunt lint"
+  },
+  "version": "1.0.0"
+}
