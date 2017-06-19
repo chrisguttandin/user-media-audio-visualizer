@@ -28,7 +28,7 @@
     "husky": "^0.13.4",
     "load-grunt-config": "^0.19.2",
     "stylelint": "^7.11.1",
-    "webpack": "^2.6.1"
+    "webpack": "^3.0.0"
   },
   "homepage": "https://chrisguttandin.github.io/user-media-audio-visualizer",
   "license": "MIT",
