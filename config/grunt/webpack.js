@@ -1,4 +1,5 @@
 const { resolve } = require('path');
+const { optimize: { ModuleConcatenationPlugin } } = require('webpack');
 
 module.exports = {
     deault: {
@@ -24,6 +25,9 @@ module.exports = {
         output: {
             filename: '[name].js',
             path: resolve('build/scripts')
-        }
+        },
+        plugins: [
+            new ModuleConcatenationPlugin()
+        ]
     }
 };
