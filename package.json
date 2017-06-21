@@ -10,7 +10,7 @@
     "babel-loader": "^7.1.0",
     "babel-preset-env": "^1.5.2",
     "cssnano": "^3.10.0",
-    "eslint-config-holy-grail": "^18.0.0",
+    "eslint-config-holy-grail": "^18.1.0",
     "greenkeeper-lockfile": "^1.6.0",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
