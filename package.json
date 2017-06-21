@@ -7,7 +7,7 @@
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel-core": "^6.25.0",
-    "babel-loader": "^7.0.0",
+    "babel-loader": "^7.1.0",
     "babel-preset-env": "^1.5.2",
     "cssnano": "^3.10.0",
     "eslint-config-holy-grail": "^18.0.0",
