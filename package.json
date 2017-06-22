@@ -11,7 +11,7 @@
     "babel-preset-env": "^1.5.2",
     "cssnano": "^3.10.0",
     "eslint-config-holy-grail": "^18.1.0",
-    "greenkeeper-lockfile": "^1.7.0",
+    "greenkeeper-lockfile": "^1.7.1",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.1.0",
