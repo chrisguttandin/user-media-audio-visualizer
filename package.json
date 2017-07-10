@@ -23,7 +23,7 @@
     "grunt-htmlhint": "^0.9.13",
     "grunt-if": "^0.1.5",
     "grunt-postcss": "^0.8.0",
-    "grunt-webpack": "^3.0.0",
+    "grunt-webpack": "^3.0.1",
     "gruntify-eslint": "^4.0.0",
     "husky": "^0.14.3",
     "load-grunt-config": "^0.19.2",
