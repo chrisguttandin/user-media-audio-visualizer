@@ -1,6 +1,15 @@
 const analysers = [];
 
+let gainNode;
 let getUserMedia;
+
+const $monitorAudio = document.querySelector('#monitor-audio');
+
+$monitorAudio.addEventListener('change', () => {
+    if (gainNode !== undefined) {
+        gainNode.gain.value = ($monitorAudio.checked) ? 1 : 0;
+    }
+});
 
 function displayLevels () {
     const fftSize = analysers[0].fftSize;
@@ -25,7 +34,13 @@ function displayLevels () {
 
     }
 
-    document.body.innerHTML = `<ul>${ levels.join('') }</ul>`;
+    const $ul = document.body.querySelector('ul');
+
+    if ($ul === null) {
+        document.body.querySelector('form').insertAdjacentHTML('afterend', `<ul>${ levels.join('') }</ul>`);
+    } else {
+        $ul.innerHTML = levels.join('');
+    }
 
     requestAnimationFrame(displayLevels);
 }
@@ -41,6 +56,10 @@ function successCallback (mediaStream) {
     const splitter = audioContext.createChannelSplitter(channelCount);
     const merger = audioContext.createChannelMerger(channelCount);
 
+    gainNode = audioContext.createGain();
+
+    gainNode.gain.value = ($monitorAudio.checked) ? 1 : 0;
+
     input.connect(splitter);
 
     for (let i = 0; i < channelCount; i += 1) {
@@ -52,7 +71,8 @@ function successCallback (mediaStream) {
         analysers.push(analyser);
     }
 
-    merger.connect(audioContext.destination);
+    merger.connect(gainNode);
+    gainNode.connect(audioContext.destination);
 
     requestAnimationFrame(displayLevels);
 }
