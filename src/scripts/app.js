@@ -1,9 +1,36 @@
 const analysers = [];
 
+let audioTrack;
 let gainNode;
 let getUserMedia;
 
+const $echoCancellation = document.querySelector('#echo-cancellation');
 const $monitorAudio = document.querySelector('#monitor-audio');
+
+$echoCancellation.addEventListener('change', () => {
+    if (audioTrack !== undefined) {
+        audioTrack
+            .applyConstraints({
+                echoCancellation: $echoCancellation.checked
+            })
+            .then(() => {
+                const settings = audioTrack.getSettings();
+
+                if (settings.echoCancellation !== undefined) {
+                    $echoCancellation.checked = settings.echoCancellation;
+                }
+            })
+            .catch(() => {
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
+
+                const settings = audioTrack.getSettings();
+
+                if (settings.echoCancellation !== undefined) {
+                    $echoCancellation.checked = settings.echoCancellation;
+                }
+            });
+    }
+});
 
 $monitorAudio.addEventListener('change', () => {
     if (gainNode !== undefined) {
@@ -50,6 +77,8 @@ function errorCallback () {
 }
 
 function successCallback (mediaStream) {
+    audioTrack = mediaStream.getAudioTracks()[0];
+
     const audioContext = new AudioContext();
     const input = audioContext.createMediaStreamSource(mediaStream);
     const channelCount = input.channelCount;
@@ -84,20 +113,22 @@ if (!('navigator' in window) ||
 
 } else {
 
+    const constraints = {
+        audio: {
+            echoCancellation: $echoCancellation.checked
+        }
+    };
+
     if ('mediaDevices' in navigator) {
         navigator.mediaDevices
-            .getUserMedia({
-                audio: true
-            })
+            .getUserMedia(constraints)
             .then(successCallback)
             .catch(errorCallback);
     } else {
         getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
         getUserMedia = getUserMedia.bind(navigator);
 
-        getUserMedia({
-            audio: true
-        }, successCallback, errorCallback);
+        getUserMedia(constraints, successCallback, errorCallback);
     }
 
 }
