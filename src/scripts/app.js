@@ -131,6 +131,20 @@ function errorCallback () {
 function successCallback (mediaStream) {
     audioTrack = mediaStream.getAudioTracks()[0];
 
+    const settings = audioTrack.getSettings();
+
+    if (settings.autoGainControl === undefined) {
+        $autoGainControl.disabled = true;
+    }
+
+    if (settings.echoCancellation === undefined) {
+        $echoCancellation.disabled = true;
+    }
+
+    if (settings.noiseSuppression === undefined) {
+        $noiseSuppression.disabled = true;
+    }
+
     const audioContext = new AudioContext();
     const input = audioContext.createMediaStreamSource(mediaStream);
     const channelCount = input.channelCount;
