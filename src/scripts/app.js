@@ -7,6 +7,7 @@ let getUserMedia;
 const $autoGainControl = document.querySelector('#auto-gain-control');
 const $echoCancellation = document.querySelector('#echo-cancellation');
 const $monitorAudio = document.querySelector('#monitor-audio');
+const $noiseSuppression = document.querySelector('#noise-suppression');
 
 $autoGainControl.addEventListener('change', () => {
     if (audioTrack !== undefined) {
@@ -61,6 +62,31 @@ $echoCancellation.addEventListener('change', () => {
 $monitorAudio.addEventListener('change', () => {
     if (gainNode !== undefined) {
         gainNode.gain.value = ($monitorAudio.checked) ? 1 : 0;
+    }
+});
+
+$noiseSuppression.addEventListener('change', () => {
+    if (audioTrack !== undefined) {
+        audioTrack
+            .applyConstraints({
+                noiseSuppression: $noiseSuppression.checked
+            })
+            .then(() => {
+                const settings = audioTrack.getSettings();
+
+                if (settings.noiseSuppression !== undefined) {
+                    $noiseSuppression.checked = settings.noiseSuppression;
+                }
+            })
+            .catch(() => {
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
+
+                const settings = audioTrack.getSettings();
+
+                if (settings.noiseSuppression !== undefined) {
+                    $noiseSuppression.checked = settings.noiseSuppression;
+                }
+            });
     }
 });
 
@@ -142,7 +168,8 @@ if (!('navigator' in window) ||
     const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
-            echoCancellation: $echoCancellation.checked
+            echoCancellation: $echoCancellation.checked,
+            noiseSuppression: $noiseSuppression.checked
         }
     };
 
