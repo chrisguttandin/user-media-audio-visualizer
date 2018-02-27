@@ -31,7 +31,7 @@ module.exports = {
         entry: {
             app: './src/scripts/app.js'
         },
-        mode: 'development',
+        mode: 'production',
         module: {
             rules: [ {
                 exclude: /node_modules/,
