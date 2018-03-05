@@ -3,6 +3,11 @@
   "bugs": {
     "url": "https://github.com/chrisguttandin/user-media-audio-visualizer/issues"
   },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
   "description": "A super simple visualizer of user media's audio input.",
   "devDependencies": {
     "@commitlint/cli": "^6.1.3",
