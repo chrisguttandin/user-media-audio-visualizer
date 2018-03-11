@@ -4,10 +4,10 @@ let audioTrack;
 let gainNode;
 let getUserMedia;
 
-const $autoGainControl = document.querySelector('#auto-gain-control');
-const $echoCancellation = document.querySelector('#echo-cancellation');
-const $monitorAudio = document.querySelector('#monitor-audio');
-const $noiseSuppression = document.querySelector('#noise-suppression');
+const $autoGainControl = document.getElementById('auto-gain-control');
+const $echoCancellation = document.getElementById('echo-cancellation');
+const $monitorAudio = document.getElementById('monitor-audio');
+const $noiseSuppression = document.getElementById('noise-suppression');
 
 $autoGainControl.addEventListener('change', () => {
     if (audioTrack !== undefined) {
