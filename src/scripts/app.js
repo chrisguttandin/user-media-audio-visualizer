@@ -104,7 +104,7 @@ function displayLevels () {
         analyser.getFloatTimeDomainData(dataArray);
 
         for (let j = 0; j < fftSize; j += 1) {
-            level += Math.pow(dataArray[j], 2);
+            level += dataArray[j] ** 2;
         }
 
         level = Math.sqrt(level / fftSize);
