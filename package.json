@@ -38,7 +38,7 @@
     "load-grunt-config": "^0.19.2",
     "stylelint": "^9.5.0",
     "stylelint-config-holy-grail": "^3.0.0",
-    "webpack": "^4.18.0"
+    "webpack": "^4.19.0"
   },
   "homepage": "https://chrisguttandin.github.io/user-media-audio-visualizer",
   "license": "MIT",
