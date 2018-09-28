@@ -41,6 +41,12 @@
     "webpack": "^4.20.2"
   },
   "homepage": "https://chrisguttandin.github.io/user-media-audio-visualizer",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint --edit --extends @commitlint/config-angular",
+      "pre-commit": "grunt lint"
+    }
+  },
   "license": "MIT",
   "main": "src/index.html",
   "name": "user-media-audio-visualizer",
@@ -50,8 +56,6 @@
     "url": "https://github.com/chrisguttandin/user-media-audio-visualizer.git"
   },
   "scripts": {
-    "commitmsg": "commitlint --edit --extends @commitlint/config-angular",
-    "precommit": "grunt lint",
     "test": "grunt lint"
   },
   "version": "1.1.5"
