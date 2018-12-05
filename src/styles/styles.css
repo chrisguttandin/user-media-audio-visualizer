@@ -42,3 +42,8 @@ li:nth-child(2):nth-last-child(1) {
 li:nth-child(2) {
     left: 45%;
 }
+
+.settings-form {
+    position: absolute;
+    width: 100%;
+}
