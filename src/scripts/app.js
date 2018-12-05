@@ -3,7 +3,6 @@ const audioContext = new AudioContext();
 
 let audioTrack;
 let gainNode;
-let getUserMedia;
 
 const $autoGainControl = document.getElementById('auto-gain-control');
 const $enableAudio = document.getElementById('enable-audio');
@@ -187,13 +186,7 @@ function successCallback (mediaStream) {
     requestAnimationFrame(displayLevels);
 }
 
-if (!('navigator' in window) ||
-        (!('getUserMedia' in window.navigator || 'mozGetUserMedia' in window.navigator || 'webkitGetUserMedia' in window.navigator))) {
-
-    document.body.innerHTML = '<p>Your browser does not support GetUserMedia. :-(</p>';
-
-} else {
-
+if ('navigator' in window && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
     const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
@@ -202,16 +195,10 @@ if (!('navigator' in window) ||
         }
     };
 
-    if ('mediaDevices' in navigator) {
-        navigator.mediaDevices
-            .getUserMedia(constraints)
-            .then(successCallback)
-            .catch(errorCallback);
-    } else {
-        getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-        getUserMedia = getUserMedia.bind(navigator);
-
-        getUserMedia(constraints, successCallback, errorCallback);
-    }
-
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(successCallback)
+        .catch(errorCallback);
+} else {
+    document.body.innerHTML = '<p>Your browser does not support GetUserMedia. :-(</p>';
 }
