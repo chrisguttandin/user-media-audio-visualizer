@@ -8,6 +8,9 @@
       "path": "cz-conventional-changelog"
     }
   },
+  "dependencies": {
+    "standardized-audio-context": "^17.0.7"
+  },
   "description": "A super simple visualizer of user media's audio input.",
   "devDependencies": {
     "@babel/core": "^7.2.0",
