@@ -173,7 +173,7 @@ function successCallback (mediaStream) {
 }
 
 if (!('navigator' in window) ||
-        (!('mozGetUserMedia' in window.navigator || 'webkitGetUserMedia' in window.navigator))) {
+        (!('getUserMedia' in window.navigator || 'mozGetUserMedia' in window.navigator || 'webkitGetUserMedia' in window.navigator))) {
 
     document.body.innerHTML = '<p>Your browser does not support GetUserMedia. :-(</p>';
 
