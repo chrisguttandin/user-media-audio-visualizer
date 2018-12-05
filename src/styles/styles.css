@@ -47,3 +47,11 @@ li:nth-child(2) {
     position: absolute;
     width: 100%;
 }
+
+.overlay-button {
+    bottom: 20%;
+    display: none;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+}

@@ -1,10 +1,12 @@
 const analysers = [];
+const audioContext = new AudioContext();
 
 let audioTrack;
 let gainNode;
 let getUserMedia;
 
 const $autoGainControl = document.getElementById('auto-gain-control');
+const $enableAudio = document.getElementById('enable-audio');
 const $echoCancellation = document.getElementById('echo-cancellation');
 const $monitorAudio = document.getElementById('monitor-audio');
 const $noiseSuppression = document.getElementById('noise-suppression');
@@ -33,6 +35,20 @@ $autoGainControl.addEventListener('change', () => {
             });
     }
 });
+
+if (audioContext.state === 'suspended') {
+    $enableAudio.addEventListener('click', () => {
+        audioContext.resume();
+    });
+
+    audioContext.onstatechange = () => {
+        if (audioContext.state !== 'suspended') {
+            $enableAudio.style.display = 'none';
+        }
+    };
+
+    $enableAudio.style.display = 'block';
+}
 
 $echoCancellation.addEventListener('change', () => {
     if (audioTrack !== undefined) {
@@ -145,7 +161,6 @@ function successCallback (mediaStream) {
         $noiseSuppression.disabled = true;
     }
 
-    const audioContext = new AudioContext();
     const input = audioContext.createMediaStreamSource(mediaStream);
     const channelCount = input.channelCount;
     const splitter = audioContext.createChannelSplitter(channelCount);
