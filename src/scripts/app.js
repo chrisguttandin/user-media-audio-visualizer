@@ -1,3 +1,5 @@
+import { AudioContext } from 'standardized-audio-context';
+
 const analysers = [];
 const audioContext = new AudioContext();
 
