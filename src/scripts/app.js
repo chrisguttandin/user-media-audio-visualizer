@@ -2,8 +2,10 @@ import { AudioContext } from 'standardized-audio-context';
 
 const analysers = [];
 const audioContext = new AudioContext();
+const audioNodes = [];
 
 let audioTrack;
+let constraints;
 let gainNode;
 
 const $autoGainControl = document.getElementById('auto-gain-control');
@@ -21,13 +23,14 @@ $autoGainControl.addEventListener('change', () => {
             .then(() => {
                 const settings = audioTrack.getSettings();
 
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.autoGainControl !== undefined) {
-                    $autoGainControl.checked = settings.autoGainControl;
+                    constraints.audio.autoGainControl = $autoGainControl.checked;
+
+                    return getUserMedia();
                 }
             })
-            .catch(() => {
-                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-
+            .finally(() => {
                 const settings = audioTrack.getSettings();
 
                 if (settings.autoGainControl !== undefined) {
@@ -60,13 +63,14 @@ $echoCancellation.addEventListener('change', () => {
             .then(() => {
                 const settings = audioTrack.getSettings();
 
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.echoCancellation !== undefined) {
-                    $echoCancellation.checked = settings.echoCancellation;
+                    constraints.audio.echoCancellation = $echoCancellation.checked;
+
+                    return getUserMedia();
                 }
             })
-            .catch(() => {
-                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-
+            .finally(() => {
                 const settings = audioTrack.getSettings();
 
                 if (settings.echoCancellation !== undefined) {
@@ -91,13 +95,14 @@ $noiseSuppression.addEventListener('change', () => {
             .then(() => {
                 const settings = audioTrack.getSettings();
 
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.noiseSuppression !== undefined) {
-                    $noiseSuppression.checked = settings.noiseSuppression;
+                    constraints.audio.noiseSuppression = $noiseSuppression.checked;
+
+                    return getUserMedia();
                 }
             })
-            .catch(() => {
-                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-
+            .finally(() => {
                 const settings = audioTrack.getSettings();
 
                 if (settings.noiseSuppression !== undefined) {
@@ -108,44 +113,64 @@ $noiseSuppression.addEventListener('change', () => {
 });
 
 function displayLevels () {
-    const fftSize = analysers[0].fftSize;
-    const dataArray = new Float32Array(fftSize);
-    const length = analysers.length;
-    const levels = [];
+    if (analysers.length > 0) {
+        const fftSize = analysers[0].fftSize;
+        const dataArray = new Float32Array(fftSize);
+        const length = analysers.length;
+        const levels = [];
 
-    for (let i = 0; i < length; i += 1) {
-        const analyser = analysers[i];
+        for (let i = 0; i < length; i += 1) {
+            const analyser = analysers[i];
 
-        let level = 0;
+            let level = 0;
 
-        analyser.getFloatTimeDomainData(dataArray);
+            analyser.getFloatTimeDomainData(dataArray);
 
-        for (let j = 0; j < fftSize; j += 1) {
-            level += dataArray[j] ** 2;
+            for (let j = 0; j < fftSize; j += 1) {
+                level += dataArray[j] ** 2;
+            }
+
+            level = Math.sqrt(level / fftSize);
+
+            levels.push(`<li style="height: ${ Math.round(level * 100) }%"></li>`);
+
         }
 
-        level = Math.sqrt(level / fftSize);
+        const $ul = document.body.querySelector('ul');
 
-        levels.push(`<li style="height: ${ Math.round(level * 100) }%"></li>`);
-
-    }
-
-    const $ul = document.body.querySelector('ul');
-
-    if ($ul === null) {
-        document.body.querySelector('form').insertAdjacentHTML('afterend', `<ul>${ levels.join('') }</ul>`);
-    } else {
-        $ul.innerHTML = levels.join('');
+        if ($ul === null) {
+            document.body.querySelector('form').insertAdjacentHTML('afterend', `<ul>${ levels.join('') }</ul>`);
+        } else {
+            $ul.innerHTML = levels.join('');
+        }
     }
 
     requestAnimationFrame(displayLevels);
 }
+
+requestAnimationFrame(displayLevels);
 
 function errorCallback () {
     document.body.innerHTML = '<p>Please allow the site to access your audio input. Refresh the page to get asked again.</p>';
 }
 
 function successCallback (mediaStream) {
+    if (audioTrack !== undefined) {
+        audioTrack.stop();
+    }
+
+    for (const analyser of analysers) {
+        analyser.disconnect();
+    }
+
+    analysers.length = 0;
+
+    for (const audioNode of audioNodes) {
+        audioNode.disconnect();
+    }
+
+    audioNodes.length = 0;
+
     audioTrack = mediaStream.getAudioTracks()[0];
 
     const settings = audioTrack.getSettings();
@@ -185,11 +210,11 @@ function successCallback (mediaStream) {
     merger.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    requestAnimationFrame(displayLevels);
+    audioNodes.push(input, splitter, merger);
 }
 
-if ('navigator' in window && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-    const constraints = {
+function getUserMedia () {
+    constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
             echoCancellation: $echoCancellation.checked,
@@ -197,10 +222,14 @@ if ('navigator' in window && 'mediaDevices' in navigator && 'getUserMedia' in na
         }
     };
 
-    navigator.mediaDevices
+    return navigator.mediaDevices
         .getUserMedia(constraints)
         .then(successCallback)
         .catch(errorCallback);
+}
+
+if ('navigator' in window && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+    getUserMedia();
 } else {
     document.body.innerHTML = '<p>Your browser does not support GetUserMedia. :-(</p>';
 }
