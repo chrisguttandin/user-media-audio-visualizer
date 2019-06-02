@@ -5,12 +5,13 @@ const audioContext = new AudioContext();
 const audioNodes = [];
 
 let audioTrack;
-let constraints;
 let gainNode;
 
 const $autoGainControl = document.getElementById('auto-gain-control');
 const $enableAudio = document.getElementById('enable-audio');
 const $echoCancellation = document.getElementById('echo-cancellation');
+const $latency = document.getElementById('latency');
+const $latencyValue = document.getElementById('latency-value');
 const $monitorAudio = document.getElementById('monitor-audio');
 const $noiseSuppression = document.getElementById('noise-suppression');
 
@@ -25,8 +26,6 @@ $autoGainControl.addEventListener('change', () => {
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.autoGainControl !== undefined && settings.autoGainControl !== $autoGainControl.checked) {
-                    constraints.audio.autoGainControl = $autoGainControl.checked;
-
                     return getUserMedia();
                 }
             })
@@ -65,8 +64,6 @@ $echoCancellation.addEventListener('change', () => {
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.echoCancellation !== undefined && settings.echoCancellation !== $echoCancellation.checked) {
-                    constraints.audio.echoCancellation = $echoCancellation.checked;
-
                     return getUserMedia();
                 }
             })
@@ -75,6 +72,40 @@ $echoCancellation.addEventListener('change', () => {
 
                 if (settings.echoCancellation !== undefined) {
                     $echoCancellation.checked = settings.echoCancellation;
+                }
+            });
+    }
+});
+
+$latency.addEventListener('change', () => {
+    if (audioTrack !== undefined) {
+        const latencyValue = parseFloat($latencyValue.value);
+
+        audioTrack
+            .applyConstraints({
+                latency: ($latency.checked) ? latencyValue : false
+            })
+            .then(() => {
+                const settings = audioTrack.getSettings();
+
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
+                if (settings.latency !== undefined
+                        && (($latency.checked && settings.latency !== latencyValue) || (!$latency.checked && settings.latency === latencyValue))) {
+                    return getUserMedia();
+                }
+            })
+            .finally(() => {
+                const settings = audioTrack.getSettings();
+
+                if (settings.latency !== undefined) {
+                    if ($latency.checked) {
+                        const isRequestedValue = settings.latency === latencyValue;
+
+                        $latency.checked = isRequestedValue;
+                        $latencyValue.disabled = isRequestedValue;
+                    } else {
+                        $latencyValue.disabled = false;
+                    }
                 }
             });
     }
@@ -97,8 +128,6 @@ $noiseSuppression.addEventListener('change', () => {
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
                 if (settings.noiseSuppression !== undefined && settings.noiseSuppression !== $noiseSuppression.checked) {
-                    constraints.audio.noiseSuppression = $noiseSuppression.checked;
-
                     return getUserMedia();
                 }
             })
@@ -183,6 +212,12 @@ function successCallback (mediaStream) {
         $echoCancellation.disabled = true;
     }
 
+    if (settings.latency === undefined) {
+        $latency.disabled = true;
+    } else {
+        $latencyValue.value = settings.latency.toString();
+    }
+
     if (settings.noiseSuppression === undefined) {
         $noiseSuppression.disabled = true;
     }
@@ -214,10 +249,11 @@ function successCallback (mediaStream) {
 }
 
 function getUserMedia () {
-    constraints = {
+    const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
             echoCancellation: $echoCancellation.checked,
+            latency: ($latency.checked) ? parseFloat($latencyValue.value) : false,
             noiseSuppression: $noiseSuppression.checked
         }
     };
