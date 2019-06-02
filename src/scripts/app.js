@@ -24,7 +24,7 @@ $autoGainControl.addEventListener('change', () => {
                 const settings = audioTrack.getSettings();
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-                if (settings.autoGainControl !== undefined) {
+                if (settings.autoGainControl !== undefined && settings.autoGainControl !== $autoGainControl.checked) {
                     constraints.audio.autoGainControl = $autoGainControl.checked;
 
                     return getUserMedia();
@@ -64,7 +64,7 @@ $echoCancellation.addEventListener('change', () => {
                 const settings = audioTrack.getSettings();
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-                if (settings.echoCancellation !== undefined) {
+                if (settings.echoCancellation !== undefined && settings.echoCancellation !== $echoCancellation.checked) {
                     constraints.audio.echoCancellation = $echoCancellation.checked;
 
                     return getUserMedia();
@@ -96,7 +96,7 @@ $noiseSuppression.addEventListener('change', () => {
                 const settings = audioTrack.getSettings();
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-                if (settings.noiseSuppression !== undefined) {
+                if (settings.noiseSuppression !== undefined && settings.noiseSuppression !== $noiseSuppression.checked) {
                     constraints.audio.noiseSuppression = $noiseSuppression.checked;
 
                     return getUserMedia();
