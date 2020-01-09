@@ -7,8 +7,8 @@
     </head>
     <body>
         <form class="settings-form">
-            <fieldset>
-                <legend>settings</legend>
+            <fieldset class="wrapper">
+                <legend>input settings</legend>
                 <input id="monitor-audio" type="checkbox">
                 <label for="monitor-audio">monitor audio</label>
                 <br>
@@ -25,7 +25,15 @@
                 <input id="noise-suppression" type="checkbox">
                 <label for="noise-suppression">activate <code>noiseSuppression</code> constraint</label>
             </fieldset>
+            <fieldset class="wrapper">
+                <legend>render settings</legend>
+                <input id="type-time-domain-input" checked type="radio" name="type" value="time-domain">
+                <label for="type-time-domain-input">time domain</label>
+                <input id="type-frequency-domain-input" type="radio" name="type" value="frequency-domain">
+                <label for="type-frequency-domain-input">frequency domain</label>
+            </fieldset>
         </form>
+        <canvas class="display-canvas" id="display-canvas"></canvas>
         <button class="overlay-button" id="enable-audio">please click here to resume the AudioContext to enable the visualization</button>
         <script src="scripts/app.js"></script>
     </body>

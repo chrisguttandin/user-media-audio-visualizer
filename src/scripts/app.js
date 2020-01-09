@@ -1,19 +1,33 @@
-import { AudioContext } from 'standardized-audio-context';
+import { AnalyserNode, AudioContext } from 'standardized-audio-context';
 
+const DISPLAY_HEIGHT = 400;
+const FFT_SIZE = 2048;
 const analysers = [];
+const arrayBuffer = new ArrayBuffer(FFT_SIZE * Float32Array.BYTES_PER_ELEMENT);
 const audioContext = new AudioContext();
 const audioNodes = [];
+const frequencyData = new Uint8Array(arrayBuffer);
+const timeDomainData = new Float32Array(arrayBuffer);
 
 let audioTrack;
 let gainNode;
+let renderType = 'time-domain';
 
 const $autoGainControl = document.getElementById('auto-gain-control');
+const $displayCanvas = document.getElementById('display-canvas');
 const $enableAudio = document.getElementById('enable-audio');
 const $echoCancellation = document.getElementById('echo-cancellation');
 const $latency = document.getElementById('latency');
 const $latencyValue = document.getElementById('latency-value');
 const $monitorAudio = document.getElementById('monitor-audio');
 const $noiseSuppression = document.getElementById('noise-suppression');
+const $typeFrequencyDomainInput = document.getElementById('type-frequency-domain-input');
+const $typeTimeDomainInput = document.getElementById('type-time-domain-input');
+
+$displayCanvas.height = DISPLAY_HEIGHT;
+$displayCanvas.width = 2048;
+
+const displayContext = $displayCanvas.getContext('2d');
 
 $autoGainControl.addEventListener('change', () => {
     if (audioTrack !== undefined) {
@@ -141,43 +155,72 @@ $noiseSuppression.addEventListener('change', () => {
     }
 });
 
-function displayLevels () {
-    if (analysers.length > 0) {
-        const fftSize = analysers[0].fftSize;
-        const dataArray = new Float32Array(fftSize);
-        const length = analysers.length;
-        const levels = [];
+$typeFrequencyDomainInput.addEventListener('change', () => {
+    if ($typeFrequencyDomainInput.checked) {
+        renderType = 'frequency-domain';
+    }
+});
 
+$typeTimeDomainInput.addEventListener('change', () => {
+    if ($typeTimeDomainInput.checked) {
+        renderType = 'time-domain';
+    }
+});
+
+function drawLevels (context, data, frequencyBinCount, xOffset, width) {
+    let level = 0;
+
+    for (let i = 0; i < frequencyBinCount; i += 1) {
+        level += data[i] ** 2;
+    }
+
+    level = Math.sqrt(level / frequencyBinCount);
+
+    const value = DISPLAY_HEIGHT * level;
+
+    context.fillRect(xOffset, DISPLAY_HEIGHT - value, width, value);
+}
+
+function drawSpectrum (context, data, frequencyBinCount, xOffset, width) {
+    const widthOfOneBin = width / frequencyBinCount;
+
+    for (let i = 0; i < frequencyBinCount; i += 1) {
+        const value = data[i];
+
+        context.fillRect(xOffset + (i * widthOfOneBin), DISPLAY_HEIGHT - value, widthOfOneBin, value);
+    }
+}
+
+function draw () {
+    displayContext.fillStyle = 'white';
+    displayContext.fillRect(0, 0, $displayCanvas.width, DISPLAY_HEIGHT);
+
+    displayContext.fillStyle = 'black';
+
+    const length = analysers.length;
+    const width = $displayCanvas.width / length;
+
+    if (length > 0) {
         for (let i = 0; i < length; i += 1) {
             const analyser = analysers[i];
+            const xOffset = i * width;
 
-            let level = 0;
+            if (renderType === 'frequency-domain') {
+                analyser.getByteFrequencyData(frequencyData);
 
-            analyser.getFloatTimeDomainData(dataArray);
+                drawSpectrum(displayContext, frequencyData, analyser.frequencyBinCount, xOffset, width);
+            } else {
+                analyser.getFloatTimeDomainData(timeDomainData);
 
-            for (let j = 0; j < fftSize; j += 1) {
-                level += dataArray[j] ** 2;
+                drawLevels(displayContext, timeDomainData, analyser.frequencyBinCount, xOffset, width);
             }
-
-            level = Math.sqrt(level / fftSize);
-
-            levels.push(`<li style="height: ${ Math.round(level * 100) }%"></li>`);
-
-        }
-
-        const $ul = document.body.querySelector('ul');
-
-        if ($ul === null) {
-            document.body.querySelector('form').insertAdjacentHTML('afterend', `<ul>${ levels.join('') }</ul>`);
-        } else {
-            $ul.innerHTML = levels.join('');
         }
     }
 
-    requestAnimationFrame(displayLevels);
+    requestAnimationFrame(draw);
 }
 
-requestAnimationFrame(displayLevels);
+requestAnimationFrame(draw);
 
 function errorCallback () {
     document.body.innerHTML = '<p>Please allow the site to access your audio input. Refresh the page to get asked again.</p>';
@@ -234,7 +277,7 @@ function successCallback (mediaStream) {
     input.connect(splitter);
 
     for (let i = 0; i < channelCount; i += 1) {
-        const analyser = audioContext.createAnalyser();
+        const analyser = new AnalyserNode(audioContext, { fftSize: FFT_SIZE, smoothingTimeConstant: 0 });
 
         splitter.connect(analyser, i);
         analyser.connect(merger, 0, i);

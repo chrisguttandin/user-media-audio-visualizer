@@ -4,48 +4,29 @@ html {
 }
 
 body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     height: 100%;
     margin: 0;
     width: 100%;
-}
-
-ul {
-    display: block;
-    height: 100%;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-li {
-    background-color: black;
-    bottom: 0;
-    display: block;
-    margin: 0 10%;
-    position: absolute;
-}
-
-/* mono styling */
-
-li:only-child {
-    width: 80%;
-}
-
-/* stereo styling */
-
-li:nth-child(1):nth-last-child(2),
-li:nth-child(2):nth-last-child(1) {
-    width: 35%;
-}
-
-li:nth-child(2) {
-    left: 45%;
 }
 
 .settings-form {
-    position: absolute;
     width: 100%;
+}
+
+.settings-form .wrapper {
+    border: 1px solid #000;
+    margin: 0 1%;
+}
+
+.display-canvas {
+    border: 1px solid #000;
+    box-sizing: border-box;
+    display: block;
+    margin: 1%;
+    width: calc(100% - 2%);
 }
 
 .overlay-button {
