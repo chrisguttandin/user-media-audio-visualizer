@@ -1,4 +1,5 @@
 import { AnalyserNode, AudioContext } from 'standardized-audio-context';
+import { mediaDevices } from 'subscribable-things';
 
 const DISPLAY_HEIGHT = 400;
 const FFT_SIZE = 2048;
@@ -17,6 +18,7 @@ const $autoGainControl = document.getElementById('auto-gain-control');
 const $displayCanvas = document.getElementById('display-canvas');
 const $enableAudio = document.getElementById('enable-audio');
 const $echoCancellation = document.getElementById('echo-cancellation');
+const $inputDevice = document.getElementById('input-device');
 const $latency = document.getElementById('latency');
 const $latencyValue = document.getElementById('latency-value');
 const $monitorAudio = document.getElementById('monitor-audio');
@@ -28,6 +30,57 @@ $displayCanvas.height = DISPLAY_HEIGHT;
 $displayCanvas.width = 2048;
 
 const displayContext = $displayCanvas.getContext('2d');
+
+function applyDeviceIdConstraints () {
+    audioTrack.stop();
+
+    getUserMedia()
+        .finally(() => {
+            const settings = audioTrack.getSettings();
+
+            if (settings.deviceId !== undefined) {
+                $inputDevice.querySelector(`[value="${ settings.deviceId }"]`).selected = true;
+            }
+        });
+}
+
+mediaDevices()((mediaDeviceInfos) => {
+    const audioInputDeviceInfos = mediaDeviceInfos
+        .filter(({ deviceId, kind }) => (deviceId !== '' && kind === 'audioinput'))
+        .concat([ { deviceId: 'default-device', label: '' } ]);
+    const $options = Array.from($inputDevice.children);
+
+    for (const { deviceId, label } of audioInputDeviceInfos) {
+        const $existingOption = $inputDevice.querySelector(`[value="${ deviceId }"]`);
+
+        if ($existingOption === null) {
+            const $newOption = document.createElement('option');
+
+            $newOption.textContent = (label === '') ? 'unknown input device' : label;
+            $newOption.value = deviceId;
+
+            $inputDevice.append($newOption);
+        } else {
+            if (label !== '' && $existingOption.textContent !== label) {
+                $existingOption.textContent = label;
+            }
+
+            $options.splice($options.indexOf($existingOption), 1);
+        }
+    }
+
+    $options.forEach(($option) => {
+        if ($option.selected) {
+            $inputDevice.querySelector('option').selected = true;
+
+            if (audioTrack !== undefined) {
+                applyDeviceIdConstraints();
+            }
+        }
+
+        $option.remove();
+    });
+});
 
 $autoGainControl.addEventListener('change', () => {
     if (audioTrack !== undefined) {
@@ -88,6 +141,17 @@ $echoCancellation.addEventListener('change', () => {
                     $echoCancellation.checked = settings.echoCancellation;
                 }
             });
+    }
+});
+
+$inputDevice.addEventListener('change', () => {
+    if (audioTrack !== undefined) {
+        const inputDeviceId = $inputDevice.options[$inputDevice.selectedIndex].value;
+        const settings = audioTrack.getSettings();
+
+        if (settings.deviceId !== undefined && settings.deviceId !== inputDeviceId) {
+            applyDeviceIdConstraints();
+        }
     }
 });
 
@@ -300,6 +364,12 @@ function getUserMedia () {
             noiseSuppression: $noiseSuppression.checked
         }
     };
+    const $selectedOption = $inputDevice.options[$inputDevice.selectedIndex];
+    const inputDeviceId = ($selectedOption !== undefined) ? $selectedOption.value : undefined;
+
+    if (inputDeviceId !== undefined && inputDeviceId !== 'default-device') {
+        constraints.audio.deviceId = { exact: inputDeviceId };
+    }
 
     return navigator.mediaDevices
         .getUserMedia(constraints)
