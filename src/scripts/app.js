@@ -106,20 +106,6 @@ $autoGainControl.addEventListener('change', () => {
     }
 });
 
-if (audioContext.state === 'suspended') {
-    $enableAudio.addEventListener('click', () => {
-        audioContext.resume();
-    });
-
-    audioContext.onstatechange = () => {
-        if (audioContext.state !== 'suspended') {
-            $enableAudio.style.display = 'none';
-        }
-    };
-
-    $enableAudio.style.display = 'block';
-}
-
 $echoCancellation.addEventListener('change', () => {
     if (audioTrack !== undefined) {
         audioTrack
@@ -375,6 +361,20 @@ function getUserMedia () {
         .getUserMedia(constraints)
         .then(successCallback)
         .catch(errorCallback);
+}
+
+if (audioContext.state === 'suspended') {
+    $enableAudio.addEventListener('click', () => {
+        audioContext.resume();
+    });
+
+    audioContext.onstatechange = () => {
+        if (audioContext.state !== 'suspended') {
+            $enableAudio.style.display = 'none';
+        }
+    };
+
+    $enableAudio.style.display = 'block';
 }
 
 if ('navigator' in window && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
