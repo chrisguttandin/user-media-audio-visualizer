@@ -31,32 +31,31 @@ $displayCanvas.width = 2048;
 
 const displayContext = $displayCanvas.getContext('2d');
 
-function applyDeviceIdConstraints () {
+function applyDeviceIdConstraints() {
     audioTrack.stop();
 
-    getUserMedia()
-        .finally(() => {
-            const settings = audioTrack.getSettings();
+    getUserMedia().finally(() => {
+        const settings = audioTrack.getSettings();
 
-            if (settings.deviceId !== undefined) {
-                $inputDevice.querySelector(`[value="${ settings.deviceId }"]`).selected = true;
-            }
-        });
+        if (settings.deviceId !== undefined) {
+            $inputDevice.querySelector(`[value="${settings.deviceId}"]`).selected = true;
+        }
+    });
 }
 
 mediaDevices()((mediaDeviceInfos) => {
     const audioInputDeviceInfos = mediaDeviceInfos
-        .filter(({ deviceId, kind }) => (deviceId !== '' && kind === 'audioinput'))
-        .concat([ { deviceId: 'default-device', label: '' } ]);
+        .filter(({ deviceId, kind }) => deviceId !== '' && kind === 'audioinput')
+        .concat([{ deviceId: 'default-device', label: '' }]);
     const $options = Array.from($inputDevice.children);
 
     for (const { deviceId, label } of audioInputDeviceInfos) {
-        const $existingOption = $inputDevice.querySelector(`[value="${ deviceId }"]`);
+        const $existingOption = $inputDevice.querySelector(`[value="${deviceId}"]`);
 
         if ($existingOption === null) {
             const $newOption = document.createElement('option');
 
-            $newOption.textContent = (label === '') ? 'unknown input device' : label;
+            $newOption.textContent = label === '' ? 'unknown input device' : label;
             $newOption.value = deviceId;
 
             $inputDevice.append($newOption);
@@ -147,14 +146,16 @@ $latency.addEventListener('change', () => {
 
         audioTrack
             .applyConstraints({
-                latency: ($latency.checked) ? latencyValue : false
+                latency: $latency.checked ? latencyValue : false
             })
             .then(() => {
                 const settings = audioTrack.getSettings();
 
                 // @todo Circumvent Chrome's disability to change the constraints of an audio track.
-                if (settings.latency !== undefined
-                        && (($latency.checked && settings.latency !== latencyValue) || (!$latency.checked && settings.latency === latencyValue))) {
+                if (
+                    settings.latency !== undefined &&
+                    (($latency.checked && settings.latency !== latencyValue) || (!$latency.checked && settings.latency === latencyValue))
+                ) {
                     return getUserMedia();
                 }
             })
@@ -177,7 +178,7 @@ $latency.addEventListener('change', () => {
 
 $monitorAudio.addEventListener('change', () => {
     if (gainNode !== undefined) {
-        gainNode.gain.value = ($monitorAudio.checked) ? 1 : 0;
+        gainNode.gain.value = $monitorAudio.checked ? 1 : 0;
     }
 });
 
@@ -217,7 +218,7 @@ $typeTimeDomainInput.addEventListener('change', () => {
     }
 });
 
-function drawLevels (context, data, frequencyBinCount, xOffset, width) {
+function drawLevels(context, data, frequencyBinCount, xOffset, width) {
     let level = 0;
 
     for (let i = 0; i < frequencyBinCount; i += 1) {
@@ -231,17 +232,17 @@ function drawLevels (context, data, frequencyBinCount, xOffset, width) {
     context.fillRect(xOffset, DISPLAY_HEIGHT - value, width, value);
 }
 
-function drawSpectrum (context, data, frequencyBinCount, xOffset, width) {
+function drawSpectrum(context, data, frequencyBinCount, xOffset, width) {
     const widthOfOneBin = width / frequencyBinCount;
 
     for (let i = 0; i < frequencyBinCount; i += 1) {
         const value = data[i];
 
-        context.fillRect(xOffset + (i * widthOfOneBin), DISPLAY_HEIGHT - value, widthOfOneBin, value);
+        context.fillRect(xOffset + i * widthOfOneBin, DISPLAY_HEIGHT - value, widthOfOneBin, value);
     }
 }
 
-function draw () {
+function draw() {
     displayContext.fillStyle = 'white';
     displayContext.fillRect(0, 0, $displayCanvas.width, DISPLAY_HEIGHT);
 
@@ -272,11 +273,11 @@ function draw () {
 
 requestAnimationFrame(draw);
 
-function errorCallback () {
+function errorCallback() {
     document.body.innerHTML = '<p>Please allow the site to access your audio input. Refresh the page to get asked again.</p>';
 }
 
-function successCallback (mediaStream) {
+function successCallback(mediaStream) {
     if (audioTrack !== undefined) {
         audioTrack.stop();
     }
@@ -322,7 +323,7 @@ function successCallback (mediaStream) {
 
     gainNode = audioContext.createGain();
 
-    gainNode.gain.value = ($monitorAudio.checked) ? 1 : 0;
+    gainNode.gain.value = $monitorAudio.checked ? 1 : 0;
 
     input.connect(splitter);
 
@@ -341,26 +342,23 @@ function successCallback (mediaStream) {
     audioNodes.push(input, splitter, merger);
 }
 
-function getUserMedia () {
+function getUserMedia() {
     const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
             echoCancellation: $echoCancellation.checked,
-            latency: ($latency.checked) ? parseFloat($latencyValue.value) : false,
+            latency: $latency.checked ? parseFloat($latencyValue.value) : false,
             noiseSuppression: $noiseSuppression.checked
         }
     };
     const $selectedOption = $inputDevice.options[$inputDevice.selectedIndex];
-    const inputDeviceId = ($selectedOption !== undefined) ? $selectedOption.value : undefined;
+    const inputDeviceId = $selectedOption !== undefined ? $selectedOption.value : undefined;
 
     if (inputDeviceId !== undefined && inputDeviceId !== 'default-device') {
         constraints.audio.deviceId = { exact: inputDeviceId };
     }
 
-    return navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(successCallback)
-        .catch(errorCallback);
+    return navigator.mediaDevices.getUserMedia(constraints).then(successCallback).catch(errorCallback);
 }
 
 if (audioContext.state === 'suspended') {
