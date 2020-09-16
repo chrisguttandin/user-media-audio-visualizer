@@ -113,7 +113,7 @@ $channelCount.addEventListener('change', () => {
 
         audioTrack
             .applyConstraints({
-                channelCount: $channelCount.checked ? channelCountValue : false
+                channelCount: $channelCount.checked ? channelCountValue : null
             })
             .then(() => {
                 const settings = audioTrack.getSettings();
@@ -185,7 +185,7 @@ $latency.addEventListener('change', () => {
 
         audioTrack
             .applyConstraints({
-                latency: $latency.checked ? latencyValue : false
+                latency: $latency.checked ? latencyValue : null
             })
             .then(() => {
                 const settings = audioTrack.getSettings();
@@ -391,9 +391,9 @@ function getUserMedia() {
     const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
-            channelCount: $channelCount.checked ? parseInt($channelCountValue.value, 10) : false,
+            channelCount: $channelCount.checked ? parseInt($channelCountValue.value, 10) : null,
             echoCancellation: $echoCancellation.checked,
-            latency: $latency.checked ? parseFloat($latencyValue.value) : false,
+            latency: $latency.checked ? parseFloat($latencyValue.value) : null,
             noiseSuppression: $noiseSuppression.checked
         }
     };
