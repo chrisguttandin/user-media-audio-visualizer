@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="styles/styles.css" rel="stylesheet">
-        <meta charset="UTF-8">
+        <link href="styles/styles.css" rel="stylesheet" />
+        <meta charset="UTF-8" />
         <title>User Media Audio Visualizer</title>
     </head>
     <body>
@@ -12,28 +12,32 @@
                 <select id="input-device">
                     <option disabled selected value="default-device">select an input device</option>
                 </select>
-                <br>
-                <input id="monitor-audio" type="checkbox">
+                <br />
+                <input id="monitor-audio" type="checkbox" />
                 <label for="monitor-audio">monitor audio</label>
-                <br>
-                <input id="auto-gain-control" type="checkbox">
+                <br />
+                <input id="auto-gain-control" type="checkbox" />
                 <label for="auto-gain-control">activate <code>autoGainControl</code> constraint</label>
-                <br>
-                <input id="echo-cancellation" type="checkbox">
+                <br />
+                <input id="channel-count" type="checkbox" />
+                <label for="channel-count">activate <code>channelCount</code> constraint</label>
+                <input id="channel-count-value" min="1" step="1" type="number" value="2" />
+                <br />
+                <input id="echo-cancellation" type="checkbox" />
                 <label for="echo-cancellation">activate <code>echoCancellation</code> constraint</label>
-                <br>
-                <input id="latency" type="checkbox">
+                <br />
+                <input id="latency" type="checkbox" />
                 <label for="latency">activate <code>latency</code> constraint</label>
-                <input id="latency-value" min="0" step="0.001" type="number" value="0">
-                <br>
-                <input id="noise-suppression" type="checkbox">
+                <input id="latency-value" min="0" step="0.001" type="number" value="0" />
+                <br />
+                <input id="noise-suppression" type="checkbox" />
                 <label for="noise-suppression">activate <code>noiseSuppression</code> constraint</label>
             </fieldset>
             <fieldset class="wrapper">
                 <legend>render settings</legend>
-                <input id="type-time-domain-input" checked type="radio" name="type" value="time-domain">
+                <input id="type-time-domain-input" checked type="radio" name="type" value="time-domain" />
                 <label for="type-time-domain-input">time domain</label>
-                <input id="type-frequency-domain-input" type="radio" name="type" value="frequency-domain">
+                <input id="type-frequency-domain-input" type="radio" name="type" value="frequency-domain" />
                 <label for="type-frequency-domain-input">frequency domain</label>
             </fieldset>
         </form>

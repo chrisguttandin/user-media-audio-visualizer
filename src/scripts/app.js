@@ -15,6 +15,8 @@ let gainNode;
 let renderType = 'time-domain';
 
 const $autoGainControl = document.getElementById('auto-gain-control');
+const $channelCount = document.getElementById('channel-count');
+const $channelCountValue = document.getElementById('channel-count-value');
 const $displayCanvas = document.getElementById('display-canvas');
 const $enableAudio = document.getElementById('enable-audio');
 const $echoCancellation = document.getElementById('echo-cancellation');
@@ -100,6 +102,43 @@ $autoGainControl.addEventListener('change', () => {
 
                 if (settings.autoGainControl !== undefined) {
                     $autoGainControl.checked = settings.autoGainControl;
+                }
+            });
+    }
+});
+
+$channelCount.addEventListener('change', () => {
+    if (audioTrack !== undefined) {
+        const channelCountValue = parseInt($channelCountValue.value, 10);
+
+        audioTrack
+            .applyConstraints({
+                channelCount: $channelCount.checked ? channelCountValue : false
+            })
+            .then(() => {
+                const settings = audioTrack.getSettings();
+
+                // @todo Circumvent Chrome's disability to change the constraints of an audio track.
+                if (
+                    settings.channelCount !== undefined &&
+                    (($channelCount.checked && settings.channelCount !== channelCountValue) ||
+                        (!$channelCount.checked && settings.channelCount === channelCountValue))
+                ) {
+                    return getUserMedia();
+                }
+            })
+            .finally(() => {
+                const settings = audioTrack.getSettings();
+
+                if (settings.channelCount !== undefined) {
+                    if ($channelCount.checked) {
+                        const isRequestedValue = settings.channelCount === channelCountValue;
+
+                        $channelCount.checked = isRequestedValue;
+                        $channelCountValue.disabled = isRequestedValue;
+                    } else {
+                        $channelCountValue.disabled = false;
+                    }
                 }
             });
     }
@@ -302,6 +341,12 @@ function successCallback(mediaStream) {
         $autoGainControl.disabled = true;
     }
 
+    if (settings.channelCount === undefined) {
+        $channelCount.disabled = true;
+    } else {
+        $channelCountValue.value = settings.channelCount.toString();
+    }
+
     if (settings.echoCancellation === undefined) {
         $echoCancellation.disabled = true;
     }
@@ -346,6 +391,7 @@ function getUserMedia() {
     const constraints = {
         audio: {
             autoGainControl: $autoGainControl.checked,
+            channelCount: $channelCount.checked ? parseInt($channelCountValue.value, 10) : false,
             echoCancellation: $echoCancellation.checked,
             latency: $latency.checked ? parseFloat($latencyValue.value) : false,
             noiseSuppression: $noiseSuppression.checked
