@@ -1,4 +1,4 @@
-import { AnalyserNode, AudioContext } from 'standardized-audio-context';
+import { AnalyserNode, AudioContext, MediaStreamTrackAudioSourceNode } from 'standardized-audio-context';
 import { mediaDevices } from 'subscribable-things';
 
 const DISPLAY_HEIGHT = 400;
@@ -361,8 +361,9 @@ function successCallback(mediaStream) {
         $noiseSuppression.disabled = true;
     }
 
-    const input = audioContext.createMediaStreamSource(mediaStream);
-    const channelCount = input.channelCount;
+    const [mediaStreamTrack] = mediaStream.getAudioTracks();
+    const input = new MediaStreamTrackAudioSourceNode(audioContext, { mediaStreamTrack });
+    const { channelCount } = mediaStreamTrack.getSettings();
     const splitter = audioContext.createChannelSplitter(channelCount);
     const merger = audioContext.createChannelMerger(channelCount);
 
