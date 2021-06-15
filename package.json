@@ -9,7 +9,7 @@
         }
     },
     "dependencies": {
-        "standardized-audio-context": "^25.2.3",
+        "standardized-audio-context": "^25.2.7",
         "subscribable-things": "^1.11.16"
     },
     "description": "A super simple visualizer of user media's audio input.",
