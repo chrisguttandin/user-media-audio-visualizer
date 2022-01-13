@@ -48,7 +48,7 @@ function applyDeviceIdConstraints() {
 mediaDevices()((mediaDeviceInfos) => {
     const audioInputDeviceInfos = mediaDeviceInfos
         .filter(({ deviceId, kind }) => deviceId !== '' && kind === 'audioinput')
-        .concat([{ deviceId: 'default-device', label: '' }]);
+        .concat([{ deviceId: 'no-selection', label: '' }]);
     const $options = Array.from($inputDevice.children);
 
     for (const { deviceId, label } of audioInputDeviceInfos) {
@@ -347,6 +347,14 @@ function successCallback(mediaStream) {
         $channelCountValue.value = settings.channelCount.toString();
     }
 
+    if (settings.deviceId !== undefined) {
+        const $option = $inputDevice.querySelector(`[value="${settings.deviceId}"]`);
+
+        if ($option !== null) {
+            $option.selected = true;
+        }
+    }
+
     if (settings.echoCancellation === undefined) {
         $echoCancellation.disabled = true;
     }
@@ -401,7 +409,7 @@ function getUserMedia() {
     const $selectedOption = $inputDevice.options[$inputDevice.selectedIndex];
     const inputDeviceId = $selectedOption !== undefined ? $selectedOption.value : undefined;
 
-    if (inputDeviceId !== undefined && inputDeviceId !== 'default-device') {
+    if (inputDeviceId !== undefined && inputDeviceId !== 'no-selection') {
         constraints.audio.deviceId = { exact: inputDeviceId };
     }
 
