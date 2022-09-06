@@ -1,4 +1,3 @@
 # user-media-audio-visualizer
 
-**A super simple visualizer of user media's audio input.**
-
+**A super basic visualizer of user media's audio input.**
