@@ -1,4 +1,4 @@
-import { AnalyserNode, AudioContext, MediaStreamTrackAudioSourceNode } from 'standardized-audio-context';
+import { AnalyserNode, AudioContext, MediaStreamTrackAudioSourceNode, OscillatorNode } from 'standardized-audio-context';
 import { mediaDevices } from 'subscribable-things';
 
 const DISPLAY_HEIGHT = 400;
@@ -25,6 +25,7 @@ const $latency = document.getElementById('latency');
 const $latencyValue = document.getElementById('latency-value');
 const $monitorAudio = document.getElementById('monitor-audio');
 const $noiseSuppression = document.getElementById('noise-suppression');
+const $playAudio = document.getElementById('play-audio');
 const $typeFrequencyDomainInput = document.getElementById('type-frequency-domain-input');
 const $typeTimeDomainInput = document.getElementById('type-time-domain-input');
 
@@ -243,6 +244,32 @@ $noiseSuppression.addEventListener('change', () => {
                 }
             });
     }
+});
+
+$playAudio.addEventListener('click', async () => {
+    $playAudio.disabled = true;
+
+    await audioContext.resume();
+
+    $enableAudio.style.display = 'none';
+
+    const currentTime = audioContext.currentTime;
+    const oscillatorNode = new OscillatorNode(audioContext);
+
+    oscillatorNode.frequency.setValueAtTime(523.25, currentTime);
+    oscillatorNode.frequency.setValueAtTime(587.33, currentTime + 1);
+    oscillatorNode.frequency.setValueAtTime(659.25, currentTime + 2);
+
+    oscillatorNode.onended = () => {
+        oscillatorNode.disconnect(audioContext.destination);
+
+        $playAudio.disabled = false;
+    };
+
+    oscillatorNode.connect(audioContext.destination);
+
+    oscillatorNode.start(currentTime);
+    oscillatorNode.stop(currentTime + 3);
 });
 
 $typeFrequencyDomainInput.addEventListener('change', () => {
