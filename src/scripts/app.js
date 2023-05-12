@@ -398,7 +398,7 @@ function successCallback(mediaStream) {
 
     const [mediaStreamTrack] = mediaStream.getAudioTracks();
     const input = new MediaStreamTrackAudioSourceNode(audioContext, { mediaStreamTrack });
-    const { channelCount } = mediaStreamTrack.getSettings();
+    const { channelCount = $channelCountValue.valueAsNumber } = mediaStreamTrack.getSettings();
     const splitter = audioContext.createChannelSplitter(channelCount);
     const merger = audioContext.createChannelMerger(channelCount);
 
