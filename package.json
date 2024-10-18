@@ -14,7 +14,7 @@
     },
     "description": "A super basic visualizer of user media's audio input.",
     "devDependencies": {
-        "@babel/core": "^7.25.2",
+        "@babel/core": "^7.25.8",
         "@babel/preset-env": "^7.25.4",
         "@commitlint/cli": "^19.5.0",
         "@commitlint/config-angular": "^19.5.0",
