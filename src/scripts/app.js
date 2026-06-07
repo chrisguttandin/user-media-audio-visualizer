@@ -344,10 +344,6 @@ function errorCallback() {
 }
 
 function successCallback(mediaStream) {
-    if (audioTrack !== undefined) {
-        audioTrack.stop();
-    }
-
     for (const analyser of analysers) {
         analyser.disconnect();
     }
@@ -438,6 +434,10 @@ function getUserMedia() {
 
     if (inputDeviceId !== undefined && inputDeviceId !== 'no-selection') {
         constraints.audio.deviceId = { exact: inputDeviceId };
+    }
+
+    if (audioTrack !== undefined) {
+        audioTrack.stop();
     }
 
     return navigator.mediaDevices.getUserMedia(constraints).then(successCallback).catch(errorCallback);
