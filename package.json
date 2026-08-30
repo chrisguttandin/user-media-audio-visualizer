@@ -45,6 +45,7 @@
     "license": "MIT",
     "main": "src/index.html",
     "name": "user-media-audio-visualizer",
+    "packageManager": "npm@12",
     "private": true,
     "repository": {
         "type": "git",
